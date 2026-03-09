@@ -27,4 +27,4 @@ jobs:
           platforms: linux/amd64
           tags: bunker.mantracare.com/lovable/brain_dump_and_sort:1.0
           build-args: |
-            VITE_DATABASE_URL=${{ secrets.DATABASE_URL }}
+            VITE_DATABASE_URL=${{ secrets.VITE_DATABASE_URL }}
