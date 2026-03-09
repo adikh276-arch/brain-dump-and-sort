@@ -5,7 +5,8 @@ import { SortThoughts } from "./SortThoughts";
 import { OneSmallStep } from "./OneSmallStep";
 import { Reflection } from "./Reflection";
 import { SavedThoughts, type SavedSession } from "./SavedThoughts";
-import { History } from "lucide-react";
+import { History, Loader2 } from "lucide-react";
+import { initializeUser, fetchUserSessions, saveSession, deleteSession } from "@/lib/db-service";
 
 export interface ThoughtItem {
   id: string;
@@ -13,32 +14,35 @@ export interface ThoughtItem {
   bucket?: "action" | "later" | "letgo";
 }
 
-const STORAGE_KEY = "brain-dump-sessions";
-
 const BrainDumpApp = () => {
   const [screen, setScreen] = useState(0);
   const [thoughts, setThoughts] = useState<ThoughtItem[]>([]);
   const [transitioning, setTransitioning] = useState(false);
   const [savedSessions, setSavedSessions] = useState<SavedSession[]>([]);
   const [showSaved, setShowSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load saved sessions from localStorage
+  const userId = sessionStorage.getItem("user_id");
+
+  // Load and initialize user
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setSavedSessions(JSON.parse(stored));
-      } catch (e) {
-        console.error("Failed to parse saved sessions", e);
-      }
-    }
-  }, []);
+    const init = async () => {
+      if (!userId) return;
 
-  // Save sessions to localStorage
-  const saveSessions = (sessions: SavedSession[]) => {
-    setSavedSessions(sessions);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  };
+      try {
+        setIsLoading(true);
+        await initializeUser(userId);
+        const sessions = await fetchUserSessions(userId);
+        setSavedSessions(sessions);
+      } catch (e) {
+        console.error("Failed to initialize user session", e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    init();
+  }, [userId]);
 
   const goTo = useCallback((next: number) => {
     setTransitioning(true);
@@ -66,24 +70,46 @@ const BrainDumpApp = () => {
     goTo(3);
   };
 
-  const handleReflectionComplete = (reflection: string) => {
-    // Save session
+  const handleReflectionComplete = async (reflection: string) => {
+    if (!userId) return;
+
     const newSession: SavedSession = {
       id: `session-${Date.now()}`,
       date: new Date().toISOString(),
       thoughts: thoughts,
       reflection: reflection,
     };
-    saveSessions([newSession, ...savedSessions]);
-    
+
+    try {
+      await saveSession(userId, newSession);
+      setSavedSessions([newSession, ...savedSessions]);
+    } catch (e) {
+      console.error("Failed to save session to DB", e);
+    }
+
     // Reset for new session
     setThoughts([]);
     goTo(0);
   };
 
-  const handleDeleteSession = (id: string) => {
-    saveSessions(savedSessions.filter((s) => s.id !== id));
+  const handleDeleteSession = async (id: string) => {
+    if (!userId) return;
+
+    try {
+      await deleteSession(userId, id);
+      setSavedSessions(savedSessions.filter((s) => s.id !== id));
+    } catch (e) {
+      console.error("Failed to delete session from DB", e);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center gradient-calm">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (showSaved) {
     return (
@@ -129,9 +155,8 @@ const BrainDumpApp = () => {
       )}
 
       <div
-        className={`relative z-10 transition-all duration-500 ease-in-out ${
-          transitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-        }`}
+        className={`relative z-10 transition-all duration-500 ease-in-out ${transitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+          }`}
       >
         {screens[screen]}
       </div>
