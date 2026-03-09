@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 interface Props {
+  onComplete: (reflection: string) => void;
   onBack: () => void;
 }
 
@@ -11,7 +12,7 @@ const feelings = [
   { label: "Still overwhelmed", emoji: "💙" },
 ];
 
-export const Reflection = ({ onBack }: Props) => {
+export const Reflection = ({ onComplete, onBack }: Props) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
@@ -49,10 +50,10 @@ export const Reflection = ({ onBack }: Props) => {
 
       {selected && (
         <button
-          onClick={onBack}
+          onClick={() => onComplete(selected)}
           className="w-full py-4 rounded-lg bg-primary text-primary-foreground font-semibold transition-all duration-300 hover:shadow-soft active:scale-[0.98] animate-fade-in mb-8"
         >
-          Start Fresh
+          Save & Start Fresh
         </button>
       )}
 
