@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ThoughtItem } from "./BrainDumpApp";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 const rotatingTexts = ["Just this step.", "Stay present.", "One thing at a time."];
 
 export const OneSmallStep = ({ thoughts, onComplete, onBack }: Props) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string | null>(null);
   const [nextStep, setNextStep] = useState("");
   const [focusMode, setFocusMode] = useState(false);
@@ -106,10 +108,10 @@ export const OneSmallStep = ({ thoughts, onComplete, onBack }: Props) => {
         <button onClick={onBack} className="p-2 rounded-lg hover:bg-muted transition-colors">
           <ArrowLeft size={20} className="text-foreground" />
         </button>
-        <h1 className="text-2xl font-bold text-foreground">One Small Step</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("small_step_title")}</h1>
       </div>
       <p className="text-muted-foreground text-sm mb-6 ml-11">
-        You don't need to solve everything. Just start small.
+        {t("small_step_desc")}
       </p>
 
       {/* Action items */}
@@ -125,11 +127,10 @@ export const OneSmallStep = ({ thoughts, onComplete, onBack }: Props) => {
               <button
                 key={t.id}
                 onClick={() => setSelected(t.id)}
-                className={`text-left p-4 rounded-lg border-2 transition-all duration-300 ${
-                  selected === t.id
+                className={`text-left p-4 rounded-lg border-2 transition-all duration-300 ${selected === t.id
                     ? "border-primary bg-accent shadow-soft"
                     : "border-border bg-card hover:border-primary/30"
-                }`}
+                  }`}
               >
                 <span className="text-sm text-foreground">{t.text}</span>
               </button>
@@ -141,7 +142,7 @@ export const OneSmallStep = ({ thoughts, onComplete, onBack }: Props) => {
       {/* Selected expansion */}
       {selectedItem && (
         <div className="animate-fade-in mb-6">
-          <p className="text-foreground/80 text-sm mb-3">What's the smallest possible next step?</p>
+          <p className="text-foreground/80 text-sm mb-3">{t("first_step_placeholder")}</p>
           <input
             type="text"
             value={nextStep}

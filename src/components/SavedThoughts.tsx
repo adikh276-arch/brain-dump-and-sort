@@ -1,4 +1,5 @@
 import { ArrowLeft, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ThoughtItem } from "./BrainDumpApp";
 
 interface SavedSession {
@@ -14,13 +15,15 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-const bucketLabels: Record<string, { emoji: string; label: string; colorClass: string }> = {
-  action: { emoji: "🟢", label: "Take Action", colorClass: "bg-calm-green/20 border-calm-green" },
-  later: { emoji: "🟡", label: "Plan for Later", colorClass: "bg-calm-yellow/20 border-calm-yellow" },
-  letgo: { emoji: "🔵", label: "Let Go", colorClass: "bg-calm-blue/20 border-calm-blue" },
-};
-
 export const SavedThoughts = ({ sessions, onBack, onDelete }: Props) => {
+  const { t } = useTranslation();
+
+  const bucketLabels: Record<string, { emoji: string; label: string; colorClass: string }> = {
+    action: { emoji: "🟢", label: t("action_needed"), colorClass: "bg-calm-green/20 border-calm-green" },
+    later: { emoji: "🟡", label: t("do_later"), colorClass: "bg-calm-yellow/20 border-calm-yellow" },
+    letgo: { emoji: "🔵", label: t("let_it_go"), colorClass: "bg-calm-blue/20 border-calm-blue" },
+  };
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
@@ -40,16 +43,15 @@ export const SavedThoughts = ({ sessions, onBack, onDelete }: Props) => {
           <ArrowLeft size={20} className="text-foreground" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Your Saved Sessions</h1>
-          <p className="text-muted-foreground text-sm">Review your past brain dumps</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("history")}</h1>
+          <p className="text-muted-foreground text-sm">{t("no_sessions").split('.')[0]}</p>
         </div>
       </div>
 
       {sessions.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
           <p className="text-muted-foreground text-center">
-            No saved sessions yet.<br />
-            Complete a brain dump to see it here.
+            {t("no_sessions")}
           </p>
         </div>
       ) : (
@@ -98,7 +100,7 @@ export const SavedThoughts = ({ sessions, onBack, onDelete }: Props) => {
 
               {session.reflection && (
                 <div className="mt-3 pt-3 border-t border-border">
-                  <span className="text-xs text-muted-foreground">Reflection: </span>
+                  <span className="text-xs text-muted-foreground">{t("reflection")}: </span>
                   <span className="text-xs text-foreground/80">{session.reflection}</span>
                 </div>
               )}

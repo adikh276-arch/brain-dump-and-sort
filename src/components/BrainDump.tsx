@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onComplete: (text: string) => void;
 }
 
 export const BrainDump = ({ onComplete }: Props) => {
+  const { t } = useTranslation();
   const [thoughts, setThoughts] = useState<string[]>([""]);
   const maxRows = 50;
 
@@ -42,7 +44,7 @@ export const BrainDump = ({ onComplete }: Props) => {
     <div className="max-w-md mx-auto px-6 py-8 min-h-screen flex flex-col">
       <div className="mb-8 animate-fade-in">
         <h1 className="text-2xl font-bold text-foreground mb-1">Brain Dump</h1>
-        <p className="text-muted-foreground text-sm">Write down anything on your mind. One thought per line — big or small.</p>
+        <p className="text-muted-foreground text-sm">{t("dump_hint")}</p>
       </div>
 
       <div className="flex-1 mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
@@ -55,7 +57,7 @@ export const BrainDump = ({ onComplete }: Props) => {
                 value={thought}
                 onChange={(e) => updateThought(index, e.target.value)}
                 onKeyDown={(e) => handleEnter(e, index)}
-                placeholder={index === 0 ? "Start typing a thought…" : "Another thought…"}
+                placeholder={index === 0 ? t("dump_placeholder") : "..."}
                 className="w-full p-4 rounded-2xl bg-card/80 backdrop-blur-sm border border-border text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:glow-border transition-shadow duration-500 text-sm shadow-card"
               />
               <button
@@ -75,10 +77,10 @@ export const BrainDump = ({ onComplete }: Props) => {
           onClick={addThought}
           className="text-sm text-primary hover:text-primary/80 transition-colors mb-3"
         >
-          + Add another thought
+          + {t("keep_going")}
         </button>
 
-        <p className="text-xs text-muted-foreground/80">Tip: Don&apos;t organize or judge your thoughts. Just capture them.</p>
+        <p className="text-xs text-muted-foreground/80">{t("breathe")}</p>
       </div>
 
       <button
@@ -87,7 +89,7 @@ export const BrainDump = ({ onComplete }: Props) => {
         className="w-full py-4 rounded-lg bg-primary text-primary-foreground font-semibold text-base disabled:opacity-40 transition-all duration-300 hover:shadow-soft active:scale-[0.98] animate-fade-in"
         style={{ animationDelay: "0.2s" }}
       >
-        Next → Sort It
+        {t("finished")}
       </button>
     </div>
   );

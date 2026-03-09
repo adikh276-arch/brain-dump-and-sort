@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onComplete: (reflection: string) => void;
@@ -13,13 +14,14 @@ const feelings = [
 ];
 
 export const Reflection = ({ onComplete, onBack }: Props) => {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
     <div className="max-w-md mx-auto px-6 py-8 min-h-screen flex flex-col items-center justify-center">
       <div className="text-center animate-fade-in">
-        <h1 className="text-3xl font-bold text-foreground mb-2">You Showed Up</h1>
-        <p className="text-muted-foreground text-sm mb-10">How do you feel now?</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">{t("reflection_title")}</h1>
+        <p className="text-muted-foreground text-sm mb-10">{t("reflection_desc")}</p>
       </div>
 
       <div className="flex flex-col gap-3 w-full mb-8">
@@ -27,11 +29,10 @@ export const Reflection = ({ onComplete, onBack }: Props) => {
           <button
             key={f.label}
             onClick={() => setSelected(f.label)}
-            className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all duration-300 animate-fade-in ${
-              selected === f.label
+            className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all duration-300 animate-fade-in ${selected === f.label
                 ? "border-primary bg-accent shadow-soft"
                 : "border-border bg-card/80 hover:border-primary/30"
-            }`}
+              }`}
             style={{ animationDelay: `${feelings.indexOf(f) * 0.1}s` }}
           >
             <span className="text-xl">{f.emoji}</span>
@@ -53,7 +54,7 @@ export const Reflection = ({ onComplete, onBack }: Props) => {
           onClick={() => onComplete(selected)}
           className="w-full py-4 rounded-lg bg-primary text-primary-foreground font-semibold transition-all duration-300 hover:shadow-soft active:scale-[0.98] animate-fade-in mb-8"
         >
-          Save & Start Fresh
+          {t("finish_session")}
         </button>
       )}
 

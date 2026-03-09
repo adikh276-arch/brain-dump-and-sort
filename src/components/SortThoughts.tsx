@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ThoughtItem } from "./BrainDumpApp";
 
 interface Props {
@@ -10,15 +11,16 @@ interface Props {
 
 type Bucket = "action" | "later" | "letgo";
 
-const buckets: { key: Bucket; emoji: string; label: string; desc: string; colorClass: string; bgClass: string }[] = [
-  { key: "action", emoji: "🟢", label: "Take Action", desc: "Things I can do something about.", colorClass: "border-calm-green", bgClass: "bg-calm-green/20" },
-  { key: "later", emoji: "🟡", label: "Plan for Later", desc: "Important, but not urgent.", colorClass: "border-calm-yellow", bgClass: "bg-calm-yellow/20" },
-  { key: "letgo", emoji: "🔵", label: "Let Go", desc: "Outside my control or not helpful right now.", colorClass: "border-calm-blue", bgClass: "bg-calm-blue/20" },
-];
-
 export const SortThoughts = ({ thoughts: initial, onComplete, onBack }: Props) => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<ThoughtItem[]>(initial);
   const [dragId, setDragId] = useState<string | null>(null);
+
+  const buckets: { key: Bucket; emoji: string; label: string; desc: string; colorClass: string; bgClass: string }[] = [
+    { key: "action", emoji: "🟢", label: t("action_needed"), desc: t("action_desc"), colorClass: "border-calm-green", bgClass: "bg-calm-green/20" },
+    { key: "later", emoji: "🟡", label: t("do_later"), desc: t("later_desc"), colorClass: "border-calm-yellow", bgClass: "bg-calm-yellow/20" },
+    { key: "letgo", emoji: "🔵", label: t("let_it_go"), desc: t("letgo_desc"), colorClass: "border-calm-blue", bgClass: "bg-calm-blue/20" },
+  ];
 
   const sorted = items.filter((i) => i.bucket);
   const unsorted = items.filter((i) => !i.bucket);
@@ -44,9 +46,9 @@ export const SortThoughts = ({ thoughts: initial, onComplete, onBack }: Props) =
         <button onClick={onBack} className="p-2 rounded-lg hover:bg-muted transition-colors">
           <ArrowLeft size={20} className="text-foreground" />
         </button>
-        <h1 className="text-2xl font-bold text-foreground">Let's Organize Your Thoughts</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("sort_title")}</h1>
       </div>
-      <p className="text-muted-foreground text-sm mb-4 ml-11">Sorting reduces overwhelm.</p>
+      <p className="text-muted-foreground text-sm mb-4 ml-11">{t("sort_desc")}</p>
 
       {/* Clarity bar */}
       <div className="mb-5 animate-fade-in">
@@ -123,13 +125,13 @@ export const SortThoughts = ({ thoughts: initial, onComplete, onBack }: Props) =
       {allSorted && (
         <div className="mt-6 text-center animate-fade-in">
           <p className="text-foreground font-medium mb-4 animate-gentle-glow inline-block px-4 py-2 rounded-lg">
-            ✨ Your thoughts are clearer now.
+            ✨
           </p>
           <button
             onClick={() => onComplete(items)}
             className="w-full py-4 rounded-lg bg-primary text-primary-foreground font-semibold transition-all duration-300 hover:shadow-soft active:scale-[0.98]"
           >
-            Continue → Reduce the Load
+            {t("continue")}
           </button>
         </div>
       )}
