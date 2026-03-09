@@ -5,12 +5,12 @@ neonConfig.fetchConnectionCache = true;
 
 const connectionString = import.meta.env.VITE_DATABASE_URL || "";
 
-// 'neon' returns a function that can be used for standard SQL queries
+// 'neon' returns a function that can be used as a tagged template or has a .query method
 export const sql = neon(connectionString);
 
 /**
  * Executes a SQL query with parameters.
  */
-export const query = async (text: string, params?: any[]) => {
-    return await sql(text, params || []);
+export const dbQuery = async (text: string, params?: any[]) => {
+    return await (sql as any).query(text, params || []);
 };

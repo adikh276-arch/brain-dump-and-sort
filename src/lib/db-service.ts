@@ -1,4 +1,4 @@
-import { sql } from './db';
+import { dbQuery } from './db';
 
 /**
  * Ensures a user exists in the database.
@@ -8,7 +8,7 @@ export async function initializeUser(userId: string | number) {
     const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
 
     try {
-        await sql(
+        await dbQuery(
             'INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO NOTHING',
             [id]
         );
@@ -25,7 +25,7 @@ export async function fetchUserSessions(userId: string | number) {
     const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
 
     try {
-        const sessions = await sql(
+        const sessions = await dbQuery(
             'SELECT * FROM sessions WHERE user_id = $1 ORDER BY date DESC',
             [id]
         );
@@ -33,7 +33,7 @@ export async function fetchUserSessions(userId: string | number) {
         const sessionsWithThoughts = [];
 
         for (const session of (sessions as any[])) {
-            const thoughts = await sql(
+            const thoughts = await dbQuery(
                 'SELECT local_id as id, text, bucket FROM thoughts WHERE session_id = $1 AND user_id = $2',
                 [session.id, id]
             );
@@ -60,14 +60,14 @@ export async function saveSession(userId: string | number, session: any) {
 
     try {
         // 1. Insert session
-        await sql(
+        await dbQuery(
             'INSERT INTO sessions (id, user_id, date, reflection) VALUES ($1, $2, $3, $4)',
             [session.id, id, session.date, session.reflection]
         );
 
         // 2. Insert thoughts
         for (const thought of session.thoughts) {
-            await sql(
+            await dbQuery(
                 'INSERT INTO thoughts (local_id, session_id, user_id, text, bucket) VALUES ($1, $2, $3, $4, $5)',
                 [thought.id, session.id, id, thought.text, thought.bucket]
             );
@@ -85,7 +85,7 @@ export async function deleteSession(userId: string | number, sessionId: string) 
     const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
 
     try {
-        await sql(
+        await dbQuery(
             'DELETE FROM sessions WHERE id = $1 AND user_id = $2',
             [sessionId, id]
         );
