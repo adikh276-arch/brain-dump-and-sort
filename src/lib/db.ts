@@ -1,14 +1,16 @@
-import pkg from 'pg';
-const { Pool } = pkg;
+import { neon, neonConfig } from '@neondatabase/serverless';
 
-// Use the environment variable for the connection string
-const connectionString = import.meta.env.VITE_DATABASE_URL || process.env.DATABASE_URL;
+// This allows the driver to work in the browser via HTTP/WebSockets
+neonConfig.fetchConnectionCache = true;
 
-export const pool = new Pool({
-    connectionString: connectionString,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
+const connectionString = import.meta.env.VITE_DATABASE_URL || "";
 
-export const query = (text: string, params?: any[]) => pool.query(text, params);
+// 'neon' returns a function that can be used for standard SQL queries
+export const sql = neon(connectionString);
+
+/**
+ * Executes a SQL query with parameters.
+ */
+export const query = async (text: string, params?: any[]) => {
+    return await sql(text, params || []);
+};
