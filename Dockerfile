@@ -2,6 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Add build arguments for Vite environment variables
+ARG VITE_DATABASE_URL
+ENV VITE_DATABASE_URL=$VITE_DATABASE_URL
+
 COPY package*.json ./
 RUN npm ci
 
