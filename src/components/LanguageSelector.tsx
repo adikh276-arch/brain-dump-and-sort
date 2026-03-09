@@ -6,7 +6,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Languages } from "lucide-react";
+import { Languages, History } from "lucide-react";
+
+interface LanguageSelectorProps {
+    onHistoryClick?: () => void;
+    showHistory?: boolean;
+}
 
 const languages = [
     { code: 'en', name: 'English' },
@@ -30,7 +35,7 @@ const languages = [
     { code: 'tl', name: 'Tagalog' },
 ];
 
-export const LanguageSelector = () => {
+export const LanguageSelector = ({ onHistoryClick, showHistory }: LanguageSelectorProps) => {
     const { i18n } = useTranslation();
 
     const changeLanguage = (lng: string) => {
@@ -41,7 +46,17 @@ export const LanguageSelector = () => {
     const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
 
     return (
-        <div className="fixed top-4 right-16 z-50">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+            {showHistory && onHistoryClick && (
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="bg-card/80 backdrop-blur-sm"
+                    onClick={onHistoryClick}
+                >
+                    <History className="h-4 w-4" />
+                </Button>
+            )}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm">

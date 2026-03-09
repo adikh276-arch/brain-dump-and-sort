@@ -7,6 +7,7 @@ import { Reflection } from "./Reflection";
 import { SavedThoughts, type SavedSession } from "./SavedThoughts";
 import { History, Loader2 } from "lucide-react";
 import { initializeUser, fetchUserSessions, saveSession, deleteSession } from "@/lib/db-service";
+import { LanguageSelector } from "./LanguageSelector";
 
 export interface ThoughtItem {
   id: string;
@@ -138,21 +139,17 @@ const BrainDumpApp = () => {
 
   return (
     <div className="min-h-screen gradient-calm relative overflow-hidden">
+      <LanguageSelector
+        showHistory={screen === 0 && savedSessions.length > 0}
+        onHistoryClick={() => setShowSaved(true)}
+      />
       {/* Breathing background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[140%] rounded-full bg-primary/5 animate-breathe" />
         <div className="absolute bottom-[-30%] right-[-30%] w-[120%] h-[120%] rounded-full bg-secondary/5 animate-breathe" style={{ animationDelay: "3s" }} />
       </div>
 
-      {/* History button */}
-      {screen === 0 && savedSessions.length > 0 && (
-        <button
-          onClick={() => setShowSaved(true)}
-          className="fixed top-4 right-4 z-20 p-3 rounded-full bg-card/80 backdrop-blur-sm shadow-soft hover:shadow-md transition-all"
-        >
-          <History size={20} className="text-foreground" />
-        </button>
-      )}
+
 
       <div
         className={`relative z-10 transition-all duration-500 ease-in-out ${transitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"

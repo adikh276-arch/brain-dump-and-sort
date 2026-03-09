@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
-import { LanguageSelector } from "./components/LanguageSelector";
 import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
@@ -17,7 +16,6 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename="/brain_dump_and_sort">
-        <LanguageSelector />
         <AuthGuard>
           <Routes>
             <Route path="/" element={<Index />} />
